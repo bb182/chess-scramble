@@ -1,80 +1,60 @@
 package board;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import ui.Display;
+
 public class ChessBoard {
 	
-	ChessBoard.Piece[][] board;
+	int[] board;
+	Display display;
+	private MoveFinder moveFinder = new MoveFinder();
+	private int turn = Piece.WHITE;
 	
-	public ChessBoard() {
-		board = new ChessBoard.Piece[8][8];
-		loadPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+	Set<Move> validMoves = new HashSet<>();
+	
+	public ChessBoard(Display display) {
+		//board = PositionParser.StringToMap("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+		board = PositionParser.StringToMap("r2nb2k/2p2Ppp/N2P3Q/8/8/2N3n1/1PPPPPPP/R3K3");
+		this.display = display;
+		display.updateBoard(board);
 	}
 	
-	public ChessBoard.Piece[][] getChessBoard() {
+	public int[] getChessBoard() {
 		return board;
 	}
 	
 	
-	public void requestPiece(int x, int y) {
-	}
-	
-	/**
-	 * Loads Position (ex: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR)
-	 */
-	public void loadPosition(String position) {
-		String[] row = position.split("/");
-		for (int r = 0; r < 8; r++) {
-			int x = 0;
-			for(char c : row[r].toCharArray()) {
-				    if(Character.isDigit(c)) {
-				    	x += Character.getNumericValue(c);
-				    	continue;
-				    }
-				    switch (c) {
-				    case 'k':
-				    	board[x][r] = Piece.B_KING;
-				    	break;
-				    case 'q':
-				    	board[x][r] = Piece.B_QUEEN;
-				    	break;
-				    case 'r':
-				    	board[x][r] = Piece.B_ROOK;
-				    	break;
-				    case 'b':
-				    	board[x][r] = Piece.B_BISHOP;
-				    	break;
-				    case 'n':
-				    	board[x][r] = Piece.B_KNIGHT;
-				    	break;
-				    case 'p':
-				    	board[x][r] = Piece.B_PAWN;
-				    	break;
-				    case 'K':
-				    	board[x][r] = Piece.W_KING;
-				    	break;
-				    case 'Q':
-				    	board[x][r] = Piece.W_QUEEN;
-				    	break;
-				    case 'R':
-				    	board[x][r] = Piece.W_ROOK;
-				    	break;
-				    case 'B':
-				    	board[x][r] = Piece.W_BISHOP;
-				    	break;
-				    case 'N':
-				    	board[x][r] = Piece.W_KNIGHT;
-				    	break;
-				    case 'P':
-				    	board[x][r] = Piece.W_PAWN;
-				    	break;
-				    }
-				    x++;
-			}
+	public void requestPiece(int x) {
+		validMoves.clear();
+		validMoves.addAll(moveFinder.getValidMoves(turn, board, x));
+		for(Move move : validMoves) {
+			display.mark(move.getTargetPos());
 		}
 	}
 	
-	public static enum Piece{
-		B_KING, B_QUEEN, B_ROOK, B_BISHOP, B_KNIGHT, B_PAWN,
-		W_KING, W_QUEEN, W_ROOK, W_BISHOP, W_KNIGHT, W_PAWN,
-		EMPTY
+	private Set<Integer> determineValidMoves(int x) {
+		Set<Integer> validMove = new HashSet<>();
+
+		return validMove;
+	}
+
+	public void releasePiece(int x) {
+		for(Move move : validMoves) {
+			if(move.getTargetPos() == x) {
+				makeMove(move);
+				turn = (turn == Piece.WHITE) ? Piece.BLACK : Piece.WHITE;
+				break;
+			}
+		}
+		display.clearMarked();
+	}
+	
+	private void makeMove(Move move) {
+		board[move.getStartingPos()] = Piece.NONE;
+		board[move.getTargetPos()] = move.getPiece();
+		//TODO promotion
+		if(Piece.isPiece(move.getPiece(), Piece.PAWN) && move.getTargetPos()/8%7 == 0) board[move.getTargetPos()] = Piece.QUEEN + turn * 8;
 	}
 }

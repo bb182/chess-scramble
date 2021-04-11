@@ -14,9 +14,10 @@ public class MouseHandler extends MouseAdapter{
 	}
 	
     public void mousePressed(MouseEvent me) { 
-    	board.requestPiece(me.getX()/64, me.getY()/64);
+    	board.requestPiece(me.getX()/64 + me.getY()/64 * 8);
     }
     
     public void mouseReleased(MouseEvent me) {
+    	board.releasePiece(me.getX()/64 + me.getY()/64 * 8);
     }
 }
