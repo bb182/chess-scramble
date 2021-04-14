@@ -1,4 +1,6 @@
-**/bin/*
-**/.gitignore
-**/.settings/*
-**.xcf
+bin/
+.gitignore
+.project
+.classpath
+.settings/
+*.xcf
