@@ -12,12 +12,12 @@ public class PositionParser {
 	private static Map<Character, Integer> pieces = new HashMap<Character, Integer>(){
 		private static final long serialVersionUID = 1L;
 	{
-		put('k', Piece.KING+8);
-		put('q', Piece.QUEEN+8);
-		put('r', Piece.ROOK+8);
-		put('b', Piece.BISHOP+8);
-		put('n', Piece.KNIGHT+8);
-		put('p', Piece.PAWN+8);
+		put('k', Piece.KING + 8);
+		put('q', Piece.QUEEN + 8);
+		put('r', Piece.ROOK + 8);
+		put('b', Piece.BISHOP + 8);
+		put('n', Piece.KNIGHT + 8);
+		put('p', Piece.PAWN + 8);
 		put('K', Piece.KING);
 		put('Q', Piece.QUEEN);
 		put('R', Piece.ROOK);
@@ -27,7 +27,7 @@ public class PositionParser {
 	}};
 	
 	public static int[] StringToMap(String position) {
-		int[] board = new int[64];
+		int[] board = new int[69];
 		String[] row = position.split("/");
 		for (int r = 0; r < 8; r++) {
 			int x = 0;
@@ -43,6 +43,11 @@ public class PositionParser {
 				    x++;
 			}
 		}
+		board[64] = -1; // collom for possible "en passant"
+		board[65] = 0; // possible castling (black left)
+		board[66] = 0; // possible castling (black right)
+		board[67] = 0; // possible castling (white left)
+		board[68] = 0; // possible castling (white right)
 		return board;
 	}
 }

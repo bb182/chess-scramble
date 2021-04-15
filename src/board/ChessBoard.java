@@ -1,6 +1,8 @@
 package board;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import ui.Display;
@@ -8,6 +10,7 @@ import ui.Display;
 public class ChessBoard {
 	
 	int[] board;
+	List<Move> moves = new ArrayList<>();
 	Display display;
 	private MoveFinder moveFinder = new MoveFinder();
 	private int turn = Piece.WHITE;
@@ -26,18 +29,12 @@ public class ChessBoard {
 	}
 	
 	
-	public void requestPiece(int x) {
+	public void requestPiece(int square) {
 		validMoves.clear();
-		validMoves.addAll(moveFinder.getValidMoves(turn, board, x));
+		validMoves.addAll(moveFinder.getValidMoves(turn, board, square));
 		for(Move move : validMoves) {
 			display.mark(move.getTargetPos());
 		}
-	}
-	
-	private Set<Integer> determineValidMoves(int x) {
-		Set<Integer> validMove = new HashSet<>();
-
-		return validMove;
 	}
 
 	public void releasePiece(int x) {
@@ -52,9 +49,16 @@ public class ChessBoard {
 	}
 	
 	private void makeMove(Move move) {
+		moves.add(move);
 		board[move.getStartingPos()] = Piece.NONE;
 		board[move.getTargetPos()] = move.getPiece();
-		//TODO promotion
-		if(Piece.isPiece(move.getPiece(), Piece.PAWN) && move.getTargetPos()/8%7 == 0) board[move.getTargetPos()] = Piece.QUEEN + turn * 8;
+		//en passant
+		if(Piece.isPiece(move.getPiece(), Piece.PAWN)) {
+			//en passant
+			board[64] = move.getEnPassantPossible() ? move.getTargetPos()%8 : -1;
+			if(move.getEnPassant()) board[move.getStartingPos()/8*8+move.getTargetPos()%8] = Piece.NONE;
+			//TODO promotion
+			if(move.getTargetPos()/8%7 == 0) board[move.getTargetPos()] = Piece.QUEEN + turn * 8;
+		}
 	}
 }

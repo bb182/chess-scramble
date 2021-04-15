@@ -52,7 +52,9 @@ public class MoveFinder {
 				pawnMoves.add(new Move(piece, pieceIndex, pieceIndex + 8 * direction));
 				boolean firstMove = (pieceIndex/8 == 3.5 - 2.5*direction);
 				if(firstMove && position[pieceIndex + 16 * direction] == Piece.NONE) {
-					pawnMoves.add(new Move(piece, pieceIndex, pieceIndex + 16 * direction));
+					Move m = new Move(piece, pieceIndex, pieceIndex + 16 * direction);
+					m.setEnPassantPossible(true);
+					pawnMoves.add(m);
 				}
 			}
 			//move diagonal
@@ -62,6 +64,15 @@ public class MoveFinder {
 					if(position[targetIndex] != Piece.NONE && !Piece.isColour(position[targetIndex], colourTurn)) {
 						pawnMoves.add(new Move(piece, pieceIndex, targetIndex));
 					}
+				}
+			}
+			//move en passant
+			int distanceToEdge = (direction+1)/2 * 7 - direction * pieceIndex/8;
+			if(position[64] != -1 && distanceToEdge == 3) {
+				if(position[64] == pieceIndex%8 - 1 || position[64] == pieceIndex%8 + 1 ) {
+					Move m = new Move(piece, pieceIndex, position[64] + pieceIndex - pieceIndex%8 + direction*8);
+					m.setEnPassant(true);
+					pawnMoves.add(m);
 				}
 			}
 		return pawnMoves;
