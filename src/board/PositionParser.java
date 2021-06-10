@@ -3,6 +3,8 @@ package board;
 import java.util.HashMap;
 import java.util.Map;
 
+import board.data_type.Piece;
+
 public class PositionParser {
 	
 	/**
@@ -27,8 +29,9 @@ public class PositionParser {
 	}};
 	
 	public static int[] StringToMap(String position) {
-		int[] board = new int[69];
-		String[] row = position.split("/");
+		String[] p = position.split(":");
+		int[] board = new int[70];
+		String[] row = p[0].split("/");
 		for (int r = 0; r < 8; r++) {
 			int x = 0;
 			for(char c : row[r].toCharArray()) {
@@ -43,11 +46,11 @@ public class PositionParser {
 				    x++;
 			}
 		}
-		board[64] = -1; // collom for possible "en passant"
-		board[65] = 0; // possible castling (black left)
-		board[66] = 0; // possible castling (black right)
-		board[67] = 0; // possible castling (white left)
-		board[68] = 0; // possible castling (white right)
+		
+		String[] extra = p[1].split("/");
+		for(int i = 0; i < 6; i++) {
+			board[64 + i] = Integer.valueOf(extra[i]);
+		}
 		return board;
 	}
 }

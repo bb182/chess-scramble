@@ -1,4 +1,4 @@
-package board;
+package board.data_type;
 
 public class Piece {
 	
@@ -12,7 +12,7 @@ public class Piece {
 	final public static int WHITE = 0;
 	final public static int BLACK = 1;
 	
-	public static boolean isColour(int p, int colour) {
+	public static boolean isColor(int p, int colour) {
 		if(p == NONE) return false;
 		return p/8 == colour;
 	}

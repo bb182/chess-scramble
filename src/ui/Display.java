@@ -14,16 +14,20 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import board.data_type.Position;
+
 public class Display extends JPanel{
 	
 	private static final long serialVersionUID = 1L;
 	
-	private int[] board = new int[64];
+	private static int[] board = new int[64];
+	
 	private BufferedImage boardImg = null;
 	private BufferedImage highlightImg = null;
 	private Map<Integer, BufferedImage> sprites = new HashMap<>();
 	
-	private Set<Integer> markedSquare = new HashSet<>();
+	private int selectedSquare = -1;
+	private Set<Integer> possibleMoves = new HashSet<>();
 	
 	public Display() {
 		loadImgs();
@@ -38,8 +42,9 @@ public class Display extends JPanel{
         super.paintComponent(g);
         g.drawImage(boardImg, 0, 0, null);
         
-        for(int square : markedSquare) {
-        	g.drawImage(highlightImg, square%8*64, square/8*64, null);
+        g.drawImage(highlightImg, selectedSquare%8*64, selectedSquare/8*64, null);
+        for(int move : possibleMoves) {
+        	g.drawImage(highlightImg, move%8*64, move/8*64, null);
         }
         
         for(int x = 0; x < 8; x++) {
@@ -52,8 +57,9 @@ public class Display extends JPanel{
 		}
     }
 	
-	public void updateBoard(int[] ChessBoard) {
-		board = ChessBoard;
+	public void updateBoard(Position position) {
+		board = position.getPosition();
+		this.updateUI();
 	}
 	
 	private void loadImgs() {
@@ -87,14 +93,15 @@ public class Display extends JPanel{
 	    return frame;
 	}
 
-	public void mark(int x) {
-		markedSquare.add(x);
-		this.updateUI();
-	}
-
 	public void clearMarked() {
-		markedSquare.clear();
+		selectedSquare = -1;
+		possibleMoves.clear();
 		this.updateUI();
 	}
 
+	public void showPlayerCoices(int square, Set<Integer> targetSquares) {
+		selectedSquare = square;
+		possibleMoves = targetSquares;
+		this.updateUI();
+	}
 }

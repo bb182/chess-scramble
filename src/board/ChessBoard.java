@@ -5,60 +5,46 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import board.data_type.Move;
+import board.data_type.Position;
 import ui.Display;
+import ui.MouseHandler;
 
 public class ChessBoard {
 	
-	int[] board;
-	List<Move> moves = new ArrayList<>();
-	Display display;
-	private MoveFinder moveFinder = new MoveFinder();
-	private int turn = Piece.WHITE;
+	Display display = new Display();
 	
-	Set<Move> validMoves = new HashSet<>();
+	Position position;
+	List<Move> history = new ArrayList<>();
 	
-	public ChessBoard(Display display) {
-		//board = PositionParser.StringToMap("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
-		board = PositionParser.StringToMap("r2nb2k/2p2Ppp/N2P3Q/8/8/2N3n1/1PPPPPPP/R3K3");
-		this.display = display;
-		display.updateBoard(board);
+	
+	
+	public ChessBoard() {
+		position = new Position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR:-1/1/1/1/1/0");
+		//position = new Position("r2nb2k/2p2Ppp/N2P3Q/8/8/2N3n1/1PPPPPPP/RN2K3:-1/0/0/1/0/0");
+		display.updateBoard(position);
+		display.addMouseListener(new MouseHandler(this));
 	}
 	
-	public int[] getChessBoard() {
-		return board;
+	public Position getPosition() {
+		return position;
 	}
 	
+	public void makeMove(Move move) {
+		history.add(move);
+		position = move.getEndPos();
+		display.updateBoard(position);
+	}
 	
-	public void requestPiece(int square) {
-		validMoves.clear();
-		validMoves.addAll(moveFinder.getValidMoves(turn, board, square));
-		for(Move move : validMoves) {
-			display.mark(move.getTargetPos());
+	public void highlightPossibilities(int square, Set<Move> moves) {
+		Set<Integer> targetSquares = new HashSet<>();
+		for(Move move : moves) {
+			targetSquares.add(move.getTarget());
 		}
+		display.showPlayerCoices(square, targetSquares);
 	}
-
-	public void releasePiece(int x) {
-		for(Move move : validMoves) {
-			if(move.getTargetPos() == x) {
-				makeMove(move);
-				turn = (turn == Piece.WHITE) ? Piece.BLACK : Piece.WHITE;
-				break;
-			}
-		}
+	
+	public void clearPossibilities() {
 		display.clearMarked();
-	}
-	
-	private void makeMove(Move move) {
-		moves.add(move);
-		board[move.getStartingPos()] = Piece.NONE;
-		board[move.getTargetPos()] = move.getPiece();
-		//en passant
-		if(Piece.isPiece(move.getPiece(), Piece.PAWN)) {
-			//en passant
-			board[64] = move.getEnPassantPossible() ? move.getTargetPos()%8 : -1;
-			if(move.getEnPassant()) board[move.getStartingPos()/8*8+move.getTargetPos()%8] = Piece.NONE;
-			//TODO promotion
-			if(move.getTargetPos()/8%7 == 0) board[move.getTargetPos()] = Piece.QUEEN + turn * 8;
-		}
 	}
 }
