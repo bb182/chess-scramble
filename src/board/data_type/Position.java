@@ -47,17 +47,8 @@ public class Position {
 		return board[64];
 	}
 	
-	public boolean getCastle(int i) {
-		return board[65 + i] != 0;
-	}
-	
-	/**
-	 * @return the position with swapped colorToMove and no en passant
-	 */
-	public int[] getTemplate() {
-		int[] tamplate = board.clone();
-		tamplate[64] = -1;
-		tamplate[69] = (tamplate[69] - 1) * -1;
-		return tamplate;
+	public boolean getCastle(int color, boolean left) {
+		int c = left ? 65 + color * 2 : 65 + color * 2 + 1;
+		return board[c] != 0;
 	}
 }
