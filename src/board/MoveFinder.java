@@ -16,13 +16,19 @@ public class MoveFinder {
 	
 	public static Set<Move> getMoves(Position position) {		
 		Set<Move> validMoves = new HashSet<>(); 
+		
+		// find king moves
+		// find pins
+		// if check/resolve
+		// else all legal
+		
 		for (int index = 0; index < 64; index++) {
-			validMoves.addAll(getMoves(index, position));
+			validMoves.addAll(getMovesForPiece(index, position));
 		}
 		return validMoves;
 	}
 
-	public static Set<Move> getMoves(int pieceIndex, Position position) {
+	public static Set<Move> getMovesForPiece(int pieceIndex, Position position) {
 		posEditor.loadPosition(position);
 		int piece = position.getPiece(pieceIndex);
 		if (piece == Piece.NONE || !Piece.isColor(piece, position.getColorToMove())) {
@@ -198,32 +204,32 @@ public class MoveFinder {
 		return clean;
 	}
 	
-	private static boolean inCheck(int pieceIndex, Position position, int colourOfKing) {
-		for(int t : getAllKnightTargets(pieceIndex)) {
+	private static boolean inCheck(int kingIndex, Position position, int colourOfKing) {
+		for(int t : getAllKnightTargets(kingIndex)) {
 			if(Piece.isColor(position.getPiece(t), colourOfKing)) continue;
 			if(Piece.isPiece(position.getPiece(t), Piece.KNIGHT)) return true;
 		}
 		
-		for(int t : getSlidingTargets(pieceIndex, position, false, true)) {
+		for(int t : getSlidingTargets(kingIndex, position, false, true)) {
 			if(Piece.isColor(position.getPiece(t), colourOfKing)) continue;
 			if((Piece.isPiece(position.getPiece(t), Piece.BISHOP) || Piece.isPiece(position.getPiece(t), Piece.QUEEN))) return true;
 		}
 		
-		for(int t : getSlidingTargets(pieceIndex, position, true, false)) {
+		for(int t : getSlidingTargets(kingIndex, position, true, false)) {
 			if(Piece.isColor(position.getPiece(t), colourOfKing)) continue;
 			if((Piece.isPiece(position.getPiece(t), Piece.ROOK) || Piece.isPiece(position.getPiece(t), Piece.QUEEN))) return true;
 		}
 		
-		for(int t : getKingTargets(pieceIndex)) {
+		for(int t : getKingTargets(kingIndex)) {
 			if(Piece.isColor(position.getPiece(t), colourOfKing)) continue;
 			if(Piece.isPiece(position.getPiece(t), Piece.KING)) return true;
 		}
 		
-		int t = pieceIndex + 7 * (colourOfKing * 2 - 1);
+		int t = kingIndex + 7 * (colourOfKing * 2 - 1);
 		if(Piece.isPiece(position.getPiece(t), Piece.PAWN) && !Piece.isColor(position.getPiece(t), colourOfKing)) {
 			return true;
 		}
-		t = pieceIndex + 9 * (colourOfKing * 2 - 1);
+		t = kingIndex + 9 * (colourOfKing * 2 - 1);
 		if(Piece.isPiece(position.getPiece(t), Piece.PAWN) && !Piece.isColor(position.getPiece(t), colourOfKing)) {
 			return true;
 		}

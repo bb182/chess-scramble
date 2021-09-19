@@ -1,6 +1,5 @@
 package board;
 
-import board.data_type.Piece;
 import board.data_type.Position;
 
 public class PositionEditor {

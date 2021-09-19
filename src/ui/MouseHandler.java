@@ -11,19 +11,17 @@ import board.data_type.Move;
 
 public class MouseHandler extends MouseAdapter{
 	
-	ChessBoard chessBoard;
 	Set<Move> validMoves;
 	
-	public MouseHandler(ChessBoard board) {
-		chessBoard = board;
+	public MouseHandler() {
 		validMoves = new HashSet<>();
 	}
 	
     public void mousePressed(MouseEvent me) {
     	int square = me.getX()/64 + me.getY()/64 * 8;
     	if(mouseOnBoard()) {
-    		validMoves.addAll(MoveFinder.getMoves(square, chessBoard.getPosition()));
-    		chessBoard.highlightPossibilities(square, validMoves);
+    		validMoves.addAll(MoveFinder.getMovesForPiece(square, ChessBoard.getPosition()));
+    		ChessBoard.highlightPossibilities(square, validMoves);
     	}
     }
     
@@ -32,12 +30,13 @@ public class MouseHandler extends MouseAdapter{
     	if(mouseOnBoard()) {
     		for(Move move : validMoves) {
     			if(move.getTarget() == square) {
-    				chessBoard.makeMove(move);
+    				System.out.println("mouse move");
+    				ChessBoard.makeMove(move);
     				break;
     			}
     		}
     		validMoves.clear();
-    		chessBoard.clearPossibilities();
+    		ChessBoard.clearPossibilities();
     	}
     }
     

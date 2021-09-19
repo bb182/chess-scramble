@@ -1,5 +1,6 @@
 package ui;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -31,10 +32,7 @@ public class Display extends JPanel{
 	
 	public Display() {
 		loadImgs();
-		
-		JFrame frame = buildFrame();
-
-	    frame.add(this);
+		buildFrame();
 	}
 	
 	@Override
@@ -85,10 +83,14 @@ public class Display extends JPanel{
 	}
 
 
-	private static JFrame buildFrame() {
+	private JFrame buildFrame() {
 	    JFrame frame = new JFrame();
+	    frame.setTitle("Chess Scramble");
+	    frame.setIconImage(sprites.get(14));
 	    frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-	    frame.setSize(64*8, 64*8);
+	    this.setPreferredSize(new Dimension(64*8,64*8));
+        frame.add(this);
+	    frame.pack();
 	    frame.setVisible(true);
 	    return frame;
 	}
